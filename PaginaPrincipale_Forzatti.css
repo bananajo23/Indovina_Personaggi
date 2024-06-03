@@ -1,0 +1,19 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: rgb(50, 63, 179);
+}
+
+.contenitore-logo img {
+  width: 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.contenitore-logo img:hover {
+  transform: scale(1.1);
+}
+

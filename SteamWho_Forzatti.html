@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Steam who?</title>
+<link rel="stylesheet" href="SteamWho_Forzatti.css">
+</head>
+<body>
+
+<a href="PaginaPrincipale_Forzatti.html"><img src="logo.png" alt="Logo" id="logo-titolo"></a>
+
+<div class="sidebar">
+  <h2>Possibili Personaggi</h2>
+  <ul id="elenco-personaggi"></ul>
+</div>
+
+<div class="contenitore-gioco" id="contenitore-gioco">
+  <h1>Chi è il personaggio?</h1>
+  <div id="domanda">...</div>
+  <div id="pulsanti">
+    <button onclick="risposta('si')">Sì</button>
+    <button onclick="risposta('no')">No</button>
+  </div>
+  <div id="risultato" style="display:none;">
+    <p id="dettagli-personaggio"></p>
+    <button onclick="iniziaNuovaPartita()">Inizia nuova partita</button>
+  </div>
+</div>
+
+<script>
+const tuttiIPersonaggi = [
+  "Albert Einstein", "Bill Gates", "Leonardo da Vinci", "Isaac Newton", "Niccolò Copernico", "Galileo Galilei", 
+  "Charles Darwin", "Enrico Fermi", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "James Clerk Maxwell", 
+  "Rosalind Franklin", "Gregor Mendel", "Alan Turing", "Alexander Graham Bell", "Hedy Lamarr", "Archimede", 
+  "Ada Lovelace", "Thomas Edison", 
+];
+const dettagliPersonaggi = {
+  "Albert Einstein": { data: "14 marzo 1879", luogo: "Ulm, Germania", info: "Sviluppò la teoria della relatività.", img: "albert-einstein.jpg"},
+  "Bill Gates": { data: "28 ottobre 1955", luogo: "Seattle, USA", info: "Co-fondatore di Microsoft.", img: "bill-gates.jpg"},
+  "Leonardo da Vinci": { data: "15 aprile 1452", luogo: "Anchiano, Italia", info: "Poliedrico genio del Rinascimento, noto per opere come la Gioconda e l'Ultima Cena.", img: "leonardo-da-vinci.jpg"},
+  "Isaac Newton": { data: "25 dicembre 1642", luogo: "Woolsthorpe, Inghilterra", info: "Matematico e fisico, autore dei Principia Mathematica.", img: "isaac-newton.jpg"},
+  "Niccolò Copernico": { data: "19 febbraio 1473", luogo: "Toruń, Polonia", info: "Astronomo, formulò la teoria eliocentrica del Sistema Solare.", img: "niccolò-copernico.jpg"},
+  "Galileo Galilei": { data: "15 febbraio 1564", luogo: "Pisa, Italia", info: "Fondamentale per lo sviluppo del metodo scientifico.", img: "galileo-galilei.jpg"},
+  "Charles Darwin": { data: "12 febbraio 1809", luogo: "Shrewsbury, Inghilterra", info: "Naturalista, noto per la teoria dell'evoluzione.", img: "charles-darwin.jpg"},
+  "Enrico Fermi": { data: "29 settembre 1901", luogo: "Roma, Italia", info: "Fisico, pioniere della fisica nucleare e del Progetto Manhattan.", img: "enrico-fermi.jpg"},
+  "Marie Curie": { data: "7 novembre 1867", luogo: "Varsavia, Polonia", info: "Fisica e chimica, pioniera nello studio della radioattività.", img: "marie-curie.jpg"},
+  "Nikola Tesla": { data: "10 luglio 1856", luogo: "Smiljan, Croazia", info: "Ingegnere elettrico e inventore, noto per i suoi contributi al design del sistema di corrente alternata.", img: "nikola-tesla.jpg"},
+  "Stephen Hawking": { data: "8 gennaio 1942", luogo: "Oxford, Inghilterra", info: "Fisico teorico, noto per i suoi lavori sui buchi neri e sulla cosmologia.", img: "stephen-hawking.jpg"},
+  "James Clerk Maxwell": { data: "13 giugno 1831", luogo: "Edimburgo, Scozia", info: "Fisico teorico, noto per la formulazione delle equazioni dell'elettromagnetismo.", img: "james-clerk-maxwell.jpg"},
+  "Rosalind Franklin": { data: "25 luglio 1920", luogo: "Londra, Inghilterra", info: "Chimica, contribuì significativamente alla comprensione della struttura del DNA.", img: "rosalind-franklin.jpg"},
+  "Gregor Mendel": { data: "20 luglio 1822", luogo: "Heinzendorf, Austria", info: "Monaco e scienziato, considerato il padre della genetica moderna.", img: "gregor-mendel.jpg"},
+  "Alan Turing": { data: "23 giugno 1912", luogo: "Londra, Inghilterra", info: "Matematico, logico, crittoanalista, considerato uno dei padri dell'informatica teorica.", img: "alan-turing.jpg"},
+  "Alexander Graham Bell": { data: "3 marzo 1847", luogo: "Edimburgo, Scozia", info: "Inventore del telefono e pioniere nelle comunicazioni.", img: "alexander-graham-bell.jpg"},
+  "Hedy Lamarr": { data: "9 novembre 1914", luogo: "Vienna, Austria", info: "Attrice e inventrice, co-inventrice della tecnologia dietro il Wi-Fi e il GPS.", img: "hedy-lamarr.jpg"},
+  "Archimede": { data: "287 a.C.", luogo: "Siracusa, Sicilia", info: "Matematico, fisico, inventore, noto per il principio di Archimede.", img: "archimede.jpg"},
+  "Ada Lovelace": { data: "10 dicembre 1815", luogo: "Londra, Inghilterra", info: "Matematica e scrittrice, considerata la prima programmatrice di computer.", img: "ada-lovelace.jpg"},
+  "Thomas Edison": { data: "11 febbraio 1847", luogo: "Milan, Ohio, USA", info: "Inventore e imprenditore, noto per lo sviluppo della lampadina elettrica e del fonografo.", img: "thomas-edison.jpg"},
+ 
+};
+const domande = [
+  { testo: "Ha fatto scoperte cruciali in fisica?", personaggi: ["Albert Einstein", "Isaac Newton", "Enrico Fermi", "Stephen Hawking", "James Clerk Maxwell", "Galileo Galilei", "Archimede","Nikola Tesla"] },
+  { testo: "È noto per il suo lavoro nell'informatica?", personaggi: ["Bill Gates", "Alan Turing", "Ada Lovelace"] },
+  { testo: "Ha fondato una delle più grandi aziende tecnologiche al mondo?", personaggi: ["Bill Gates"] },
+  { testo: "Ha rivoluzionato il campo dell'astronomia?", personaggi: ["Niccolò Copernico", "Galileo Galilei"] },
+  { testo: "Ha scoperto la legge dei moti dei pendoli?", personaggi: ["Galileo Galilei"] },
+  { testo: "È noto per la sua teoria dell'evoluzione?", personaggi: ["Charles Darwin"] },
+  { testo: "Ha influenzato la nostra comprensione della gravità?", personaggi: ["Isaac Newton", "Albert Einstein"] },
+  { testo: "Ha lavorato nel campo della ricerca nucleare?", personaggi: ["Enrico Fermi", "Marie Curie"] },
+  { testo: "È famoso per la scoperta della penicillina?", personaggi: ["Alexander Fleming"] },
+  { testo: "Ha contribuito allo studio dell'anatomia umana?", personaggi: ["Leonardo da Vinci"] },
+  { testo: "Ha studiato i movimenti dei corpi celesti?", personaggi: ["Isaac Newton"] },
+  { testo: "Ha proposto il test di Turing per valutare l'intelligenza artificiale?", personaggi: ["Alan Turing"] },
+  { testo: "Ha lavorato sulle teorie eliocentriche?", personaggi: ["Niccolò Copernico"] },
+  { testo: "È noto per lo sviluppo della lampadina elettrica?", personaggi: ["Thomas Edison"] },
+  { testo: "Ha fondato un'importante azienda informatica?", personaggi: ["Bill Gates"] },
+  { testo: "Ha sviluppato concetti fondamentali della meccanica quantistica?", personaggi: ["Albert Einstein"] },
+  { testo: "È stato un pioniere nell'elettromagnetismo?", personaggi: ["James Clerk Maxwell"] },
+  { testo: "È noto per lo sviluppo di un sistema di distribuzione elettrica a corrente continua?", personaggi: ["Thomas Edison"] },
+  { testo: "Ha fatto scoperte fondamentali nella genetica?", personaggi: ["Gregor Mendel"] },
+  { testo: "Ha contribuito significativamente alla comprensione della struttura del DNA?", personaggi: ["Rosalind Franklin"] },
+  { testo: "È noto per i suoi studi sulla radioattività?", personaggi: ["Marie Curie"] },
+  { testo: "Ha contribuito alla teoria della relatività generale?", personaggi: ["Albert Einstein", "Stephen Hawking"] },
+  { testo: "Ha inventato un dispositivo di comunicazione rivoluzionario?", personaggi: ["Alexander Graham Bell", "Hedy Lamarr"] },
+  { testo: "È l'inventore del telefono?", personaggi: ["Alexander Graham Bell"] },
+  { testo: "È noto per le sue invenzioni nel campo dell'elettricità?", personaggi: ["Nikola Tesla"] },
+  { testo: "Ha fatto scoperte significative in matematica o fisica antica?", personaggi: ["Archimede"] },
+  { testo: "È considerato/a il/la primo/a programmatore/programmatrice di computer?", personaggi: ["Ada Lovelace"] }
+];
+let personaggiPossibili = [...tuttiIPersonaggi];
+let domandeRimanenti;
+
+function iniziaNuovaPartita() {
+  personaggiPossibili = [...tuttiIPersonaggi];
+  domandeRimanenti = [...domande];
+  document.getElementById('risultato').style.display = 'none';
+  document.getElementById('pulsanti').style.display = 'block';
+  document.getElementById('contenitore-gioco').getElementsByTagName('h1')[0].textContent = 'Chi è il personaggio?'; // Modifica questa riga per aggiustare il titolo
+  aggiornaElencoPersonaggi();
+  mostraDomanda();
+}
+
+function aggiornaElencoPersonaggi() {
+  const lista = document.getElementById('elenco-personaggi');
+  lista.innerHTML = personaggiPossibili.map(personaggio => `<li>${personaggio}</li>`).join('');
+}
+
+function mostraDomanda() {
+  if (personaggiPossibili.length > 1 && domandeRimanenti.length > 0) {
+    filtraDomandeRilevanti();
+    document.getElementById('domanda').textContent = domandeRimanenti[0].testo;
+  } else {
+    terminaGioco();
+  }
+}
+
+function filtraDomandeRilevanti() {
+  domandeRimanenti = domandeRimanenti.filter(domanda => 
+    domanda.personaggi.some(personaggio => personaggiPossibili.includes(personaggio))
+  );
+}
+
+function risposta(rispostaUtente) {
+  const domandaCorrente = domandeRimanenti.shift();
+  if (rispostaUtente === 'si') {
+    personaggiPossibili = personaggiPossibili.filter(personaggio => domandaCorrente.personaggi.includes(personaggio));
+  } else {
+    personaggiPossibili = personaggiPossibili.filter(personaggio => !domandaCorrente.personaggi.includes(personaggio));
+  }
+  aggiornaElencoPersonaggi();
+  mostraDomanda();
+}
+
+function terminaGioco() {
+  document.getElementById('pulsanti').style.display = 'none';
+  if (personaggiPossibili.length === 1) {
+    const personaggioScelto = personaggiPossibili[0];
+    const dettagli = dettagliPersonaggi[personaggioScelto];
+    const imgElement = `<img src="${dettagli.img}" alt="Immagine di ${personaggioScelto}" style="max-width: 200px;">`;
+    const dettagliElement = `<div style="margin-left: 20px;">
+                                <h3 style="font-weight: bold; margin-bottom: 5px;">${personaggioScelto}</h3>
+                                <p>Data di nascita: ${dettagli.data}<br>Luogo di nascita: ${dettagli.luogo}<br>Info: ${dettagli.info}</p>
+                              </div>`;
+    document.getElementById('domanda').innerHTML = `<div style="display: flex; align-items: center;">
+                                                        ${imgElement}
+                                                        ${dettagliElement}
+                                                      </div>`;
+    document.querySelector('.contenitore-gioco h1').textContent = `Mhh. Stai pensando a ${personaggioScelto}?`;
+  } else {
+    document.getElementById('domanda').textContent = "Personaggio non trovato. Inizia nuova partita!";
+
+    document.querySelector('.contenitore-gioco h1').textContent = "Personaggio non trovato!";
+  }
+  document.getElementById('risultato').style.display = 'block';
+}
+iniziaNuovaPartita();
+</script>
+
+</body>
+</html>
